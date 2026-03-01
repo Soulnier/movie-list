@@ -1,4 +1,4 @@
-package main.java.main.java.ru.exmp.watchlist.model;
+package ru.exmp.movielist.model;
 
 public class Status {
     private int id;

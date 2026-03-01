@@ -1,0 +1,4 @@
+ru\exmp\movielist\model\Movie.class
+ru\exmp\movielist\model\Status.class
+ru\exmp\movielist\model\Genre.class
+ru\exmp\movielist\util\testDbConnection.class
