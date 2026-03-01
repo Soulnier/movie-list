@@ -3,11 +3,11 @@ package ru.exmp.movielist.model;
 import java.time.LocalDateTime;
 
 public class Movie {
-    private int id;
+    private Integer id;
     private String name;
-    private int releaseYear;
-    private int watchStatusId;
-    private int userRating;
+    private Integer releaseYear;
+    private Integer watchStatusId;
+    private Integer userRating;
     private String userReview;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -23,7 +23,7 @@ public class Movie {
         this.releaseYear = releaseYear;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -31,15 +31,15 @@ public class Movie {
         return name;
     }
 
-    public int getReleaseYear() {
+    public Integer getReleaseYear() {
         return releaseYear;
     }
 
-    public int getWatchStatusId() {
+    public Integer getWatchStatusId() {
         return watchStatusId;
     }
 
-    public int getUserRating() {
+    public Integer getUserRating() {
         return userRating;
     }
 

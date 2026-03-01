@@ -1,29 +1,53 @@
 package ru.exmp.movielist.dao;
 
 import org.postgresql.util.PSQLException;
+import ru.exmp.movielist.model.Genre;
 import ru.exmp.movielist.util.DatabaseConnection;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GenreDAO {
 
-    public void getAllGenres() {
+    public void printAllGenres() {
     String sql = "select id, name from genres order by name";
 
-    try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql);
          ResultSet rs = ps.executeQuery()) {
-        while (rs.next())
-        {
-            int id = rs.getInt("id");
-            String name = rs.getString("name");
+            while (rs.next())
+            {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
 
-            System.out.println(id + " " + name);
-        }
-    } catch (SQLException e) {
+                System.out.println(id + " " + name);
+            }
+        } catch (SQLException e) {
         System.out.println("Ошибка запроса" + e.getMessage());
         e.printStackTrace();
+        }
     }
+
+    public List<Genre> getAllGenres() {
+        List<Genre> genres = new ArrayList<>();
+        String sql = "select id, name from genres order by name";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next())
+            {
+                Genre g = new Genre();
+                g.setId(rs.getInt("id"));
+                g.setName(rs.getString("name"));
+                genres.add(g);
+            }
+        } catch (SQLException e) {
+            System.out.println("Ошибка получения жанров" + e.getMessage());
+            e.printStackTrace();
+        }
+        return genres;
     }
 
     public boolean saveGenre(String genreName) {
@@ -84,5 +108,34 @@ public class GenreDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<Genre> getGenresByMovieId(int movieId)
+    {
+        List<Genre> genres = new ArrayList<>();
+
+        String sql = "SELECT g.id, g.name " +
+                "FROM genres g " +
+                "JOIN genre_movie gm ON g.id = gm.genre_id " +
+                "WHERE gm.movie_id = ? " +
+                "ORDER BY g.name";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, movieId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Genre g = new Genre();
+                    g.setId(rs.getInt("id"));
+                    g.setName(rs.getString("name"));
+                    genres.add(g);
+                }
+            }
+        } catch (SQLException e)
+        {
+            System.out.println("Ошибка при получении жанров " + e.getMessage());
+            e.printStackTrace();
+        }
+        return genres;
     }
 }

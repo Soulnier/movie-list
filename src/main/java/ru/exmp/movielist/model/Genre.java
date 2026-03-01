@@ -1,7 +1,7 @@
 package ru.exmp.movielist.model;
 
 public class Genre {
-    private int id;
+    private Integer id;
     private String name;
 
     public Genre() {
@@ -12,7 +12,7 @@ public class Genre {
         this.name = name;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

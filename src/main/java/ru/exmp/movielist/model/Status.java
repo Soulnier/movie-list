@@ -1,7 +1,7 @@
 package ru.exmp.movielist.model;
 
 public class Status {
-    private int id;
+    private Integer id;
     private String name;
 
     public Status() {
