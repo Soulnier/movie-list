@@ -10,8 +10,20 @@ import java.util.List;
 
 public class GenreDAO {
 
+    private static final GenreDAO INSTANCE = new GenreDAO();
+
+    private GenreDAO() {}
+
+    public static GenreDAO getInstance() {
+        return INSTANCE;
+    }
+
     public void printAllGenres() {
-    String sql = "select id, name from genres order by name";
+    String sql = """
+        select id, name 
+        from genres 
+        order by name
+        """;
 
         try (Connection conn = DatabaseConnection.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql);
@@ -31,7 +43,11 @@ public class GenreDAO {
 
     public List<Genre> getAllGenres() {
         List<Genre> genres = new ArrayList<>();
-        String sql = "select id, name from genres order by name";
+        String sql = """
+                select id, name 
+                from genres 
+                order by name
+                """;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -50,36 +66,44 @@ public class GenreDAO {
         return genres;
     }
 
-    public boolean saveGenre(String genreName) {
-        String sql = "insert into genres (name) values (?)";
+    public Genre saveGenre(Genre g) {
+        String sql = """
+                insert into genres (name) 
+                values (?)
+                """;
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, genreName);
-            int affectedRows = ps.executeUpdate();
-            return affectedRows > 0;
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, g.getName());
+
+            ps.executeUpdate();
+
+            var generatedKeys = ps.getGeneratedKeys();
+            if(generatedKeys.next()) {
+                g.setId(generatedKeys.getInt("id"));
+            }
+            return g;
+
+
         } catch (SQLException e){
             System.out.println("Ошибка при добавлении жанра " + e.getMessage());
             e.printStackTrace();
-            return false;
+            throw new RuntimeException();
         }
     }
 
     public boolean deleteGenreByName(String genreName)
     {
-        String sql = "delete from genres where name = ?";
+        String sql = """
+                delete 
+                from genres 
+                where name = ?
+                """;
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, genreName);
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows > 0)
-            {
-                System.out.println("Жанр " + genreName + " удалён");
-                return true;
-            } else {
-                System.out.println("Жанр " + genreName + " не найден");
-                return false;
-            }
+            return ps.executeUpdate() > 0;
+
         } catch (SQLException e) {
             System.out.println("Ошибка при удалении жанра " + e.getMessage());
             e.printStackTrace();
@@ -89,20 +113,17 @@ public class GenreDAO {
 
     public boolean deleteGenreById(int id)
     {
-        String sql = "delete from genres where id = ?";
+        String sql = """
+                delete 
+                from genres 
+                where id = ?
+                """;
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows > 0)
-            {
-                System.out.println("Жанр с id " + id + " удалён");
-                return true;
-            } else {
-                System.out.println("Жанр с id " + id + " не найден");
-                return false;
-            }
+            return ps.executeUpdate() > 0;
+
         } catch (SQLException e) {
             System.out.println("Ошибка при удалении жанра " + e.getMessage());
             e.printStackTrace();

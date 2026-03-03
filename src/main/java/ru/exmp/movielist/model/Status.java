@@ -31,7 +31,8 @@ public class Status {
     @Override
     public String toString() {
         return "Status{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 '}';
     }
 }
