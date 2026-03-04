@@ -7,7 +7,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 public class StatusDAO {
 
     public static StatusDAO INSTANCE = new StatusDAO();
@@ -121,5 +120,9 @@ public class StatusDAO {
             e.printStackTrace();
             throw new RuntimeException();
         }
+    }
+
+    public static void main(String[] args) {
+
     }
 }
