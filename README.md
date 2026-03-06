@@ -24,7 +24,7 @@
 
 #### 1. Клонировать репозиторий
 ```bash
-https://github.com/Soulnier/movie-list.git
+git clone https://github.com/Soulnier/movie-list.git
 cd movie_list
 ```
 
