@@ -121,8 +121,4 @@ public class StatusDAO {
             throw new RuntimeException();
         }
     }
-
-    public static void main(String[] args) {
-
-    }
 }

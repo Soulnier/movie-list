@@ -4,8 +4,9 @@ ru\exmp\movielist\model\Movie.class
 ru\exmp\movielist\dao\MovieDAO.class
 ru\exmp\movielist\dto\MovieDto.class
 ru\exmp\movielist\model\Status.class
+ru\exmp\movielist\util\DatabaseInitializer.class
 ru\exmp\movielist\model\Genre.class
 ru\exmp\movielist\util\DatabaseConnection.class
-ru\exmp\movielist\dao\StatusDAO.class
 ru\exmp\movielist\servlet\MovieServlet.class
+ru\exmp\movielist\dao\StatusDAO.class
 ru\exmp\movielist\util\PropertiesUtil.class

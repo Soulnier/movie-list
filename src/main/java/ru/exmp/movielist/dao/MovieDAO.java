@@ -1,6 +1,5 @@
 package ru.exmp.movielist.dao;
 
-import ru.exmp.movielist.model.Genre;
 import ru.exmp.movielist.model.Movie;
 import ru.exmp.movielist.util.DatabaseConnection;
 
@@ -11,7 +10,7 @@ import java.util.Optional;
 
 public class MovieDAO {
 
-    public static MovieDAO INSTANCE = new MovieDAO();
+    public static final MovieDAO INSTANCE = new MovieDAO();
 
     private MovieDAO() {}
 
@@ -22,9 +21,9 @@ public class MovieDAO {
     public List<Movie> getAllMovies() {
         List<Movie> movies = new ArrayList<>();
         String sql = """
-                select id, name, release_year, watch_status_id, user_rating, user_review 
-                from movies 
-                order by name
+                SELECT id, name, release_year, watch_status_id, user_rating, user_review 
+                FROM movies 
+                ORDER BY name
                 """;
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -35,8 +34,17 @@ public class MovieDAO {
                 m.setId(rs.getInt("id"));
                 m.setName(rs.getString("name"));
                 m.setReleaseYear(rs.getInt("release_year"));
-                m.setWatchStatusId(rs.getInt("watch_status_id"));
-                m.setUserRating(rs.getInt("user_rating"));
+
+                int statusId = rs.getInt("watch_status_id");
+                if (!rs.wasNull()) {
+                    m.setWatchStatusId(statusId);
+                }
+
+                int rating = rs.getInt("user_rating");
+                if (!rs.wasNull()) {
+                    m.setUserRating(rating);
+                }
+
                 m.setUserReview(rs.getString("user_review"));
                 movies.add(m);
             }
@@ -51,28 +59,39 @@ public class MovieDAO {
     public List<Movie> getMoviesByGenreName(String genreName) {
         List<Movie> movies = new ArrayList<>();
         String sql = """
-                select m.id, m.name, m.release_year, m.watch_status_id, m.user_rating, m.user_review
-                from movies m join genre_movie gm on m.id = gm.movie_id
-                join genres g on gm.genre_id = g.id
-                where g.name = ?
-                order by m.name
+                SELECT m.id, m.name, m.release_year, m.watch_status_id, m.user_rating, m.user_review
+                FROM movies m 
+                JOIN genre_movie gm ON m.id = gm.movie_id
+                JOIN genres g ON gm.genre_id = g.id
+                WHERE g.name = ?
+                ORDER BY m.name
                  """;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, genreName);
 
-            ResultSet rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Movie m = new Movie();
                     m.setId(rs.getInt("id"));
                     m.setName(rs.getString("name"));
                     m.setReleaseYear(rs.getInt("release_year"));
-                    m.setWatchStatusId(rs.getInt("watch_status_id"));
-                    m.setUserRating(rs.getInt("user_rating"));
+
+                    int statusId = rs.getInt("watch_status_id");
+                    if (!rs.wasNull()) {
+                        m.setWatchStatusId(statusId);
+                    }
+
+                    int rating = rs.getInt("user_rating");
+                    if (!rs.wasNull()) {
+                        m.setUserRating(rating);
+                    }
+
                     m.setUserReview(rs.getString("user_review"));
                     movies.add(m);
                 }
+            }
         } catch (SQLException e) {
             System.out.println("Ошибка при получении фильмов по жанру " + e.getMessage());
             e.printStackTrace();
@@ -80,12 +99,11 @@ public class MovieDAO {
         return movies;
     }
 
-    public boolean deleteMovieById(int id)
-    {
+    public boolean deleteMovieById(int id) {
         String sql = """
-                delete 
-                from movies 
-                where id = ?
+                DELETE 
+                FROM movies 
+                WHERE id = ?
                 """;
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -99,56 +117,84 @@ public class MovieDAO {
         }
     }
 
-    public Optional<Movie> getMovieById(int id){
+    public Optional<Movie> getMovieById(int id) {
         String sql = """
-                Select id, name, release_year, watch_status_id, user_rating, user_review
-                from movies 
-                where id = ?
+                SELECT id, name, release_year, watch_status_id, user_rating, user_review
+                FROM movies 
+                WHERE id = ?
                 """;
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps=conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
-            var rs = ps.executeQuery();
 
-            Movie m = new Movie();
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
+                    Movie m = new Movie();
                     m.setId(rs.getInt("id"));
                     m.setName(rs.getString("name"));
                     m.setReleaseYear(rs.getInt("release_year"));
-                    m.setWatchStatusId(rs.getInt("watch_status_id"));
-                    m.setUserRating(rs.getInt("user_rating"));
+
+                    int statusId = rs.getInt("watch_status_id");
+                    if (!rs.wasNull()) {
+                        m.setWatchStatusId(statusId);
+                    }
+
+                    int rating = rs.getInt("user_rating");
+                    if (!rs.wasNull()) {
+                        m.setUserRating(rating);
+                    }
+
                     m.setUserReview(rs.getString("user_review"));
+                    return Optional.of(m);
                 }
-                return Optional.of(m);
+            }
+            return Optional.empty();
+
         } catch (SQLException e) {
             System.out.println("Ошибка при поиске фильма " + e.getMessage());
             e.printStackTrace();
-            throw new RuntimeException();
+            return Optional.empty();
         }
     }
 
     public boolean updateMovie(Movie m) {
+        System.out.println("MovieDAO.updateMovie получил ID: " + m.getId());
+
         String sql = """
-                Update movies set 
-                "name = ?, 
-                "release_year = ?, 
-                "watch_status_id = ?, 
-                "user_rating = ?, 
-                "user_review = ? 
-                "where id = ?
-                """;
+            UPDATE movies SET 
+            name = ?, 
+            release_year = ?, 
+            watch_status_id = ?, 
+            user_rating = ?, 
+            user_review = ? 
+            WHERE id = ?
+            """;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, m.getName());
-            ps.setObject(2, m.getReleaseYear());
-            ps.setObject(3, m.getWatchStatusId());
-            ps.setObject(4, m.getUserRating());
-            ps.setObject(5, m.getUserReview());
+            ps.setInt(2, m.getReleaseYear());
+
+            if (m.getWatchStatusId() != null) {
+                ps.setInt(3, m.getWatchStatusId());
+            } else {
+                ps.setNull(3, Types.INTEGER);
+            }
+
+            if (m.getUserRating() != null) {
+                ps.setInt(4, m.getUserRating());
+            } else {
+                ps.setNull(4, Types.INTEGER);
+            }
+
+            ps.setString(5, m.getUserReview());
             ps.setInt(6, m.getId());
 
-            return ps.executeUpdate() > 0;
+            int affectedRows = ps.executeUpdate();
+            System.out.println("Затронуто строк: " + affectedRows);
+            return affectedRows > 0;
+
         } catch (SQLException e) {
             System.out.println("Ошибка при обновлении фильма " + e.getMessage());
             e.printStackTrace();
@@ -158,33 +204,72 @@ public class MovieDAO {
 
     public Movie saveMovie(Movie m) {
         String sql = """
-                insert into movies 
+                INSERT INTO movies 
                 (name, release_year, watch_status_id, user_rating, user_review) 
-                values (?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?)
                 """;
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, m.getName());
-            ps.setObject(2, m.getReleaseYear());
-            ps.setObject(3, m.getWatchStatusId());
-            ps.setObject(4, m.getUserRating());
-            ps.setObject(5, m.getUserReview());
+            ps.setInt(2, m.getReleaseYear());
+
+            if (m.getWatchStatusId() != null) {
+                ps.setInt(3, m.getWatchStatusId());
+            } else {
+                ps.setNull(3, Types.INTEGER);
+            }
+
+            if (m.getUserRating() != null) {
+                ps.setInt(4, m.getUserRating());
+            } else {
+                ps.setNull(4, Types.INTEGER);
+            }
+
+            ps.setString(5, m.getUserReview());
 
             ps.executeUpdate();
 
-            var generatedKeys = ps.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                m.setId(generatedKeys.getInt("id"));
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    m.setId(generatedKeys.getInt(1));
+                }
             }
             return m;
 
         } catch (SQLException e) {
             System.out.println("Ошибка при добавлении фильма " + e.getMessage());
             e.printStackTrace();
-            throw new RuntimeException();
+            throw new RuntimeException("Ошибка при сохранении фильма", e);
+        }
+    }
+
+    public void saveMovieGenres(int movieId, List<Integer> genreIds) {
+        String deleteSql = "DELETE FROM genre_movie WHERE movie_id = ?";
+        String insertSql = "INSERT INTO genre_movie (movie_id, genre_id) VALUES (?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement deletePs = conn.prepareStatement(deleteSql)) {
+                deletePs.setInt(1, movieId);
+                deletePs.executeUpdate();
+            }
+
+            if (genreIds != null && !genreIds.isEmpty()) {
+                try (PreparedStatement insertPs = conn.prepareStatement(insertSql)) {
+                    for (Integer genreId : genreIds) {
+                        insertPs.setInt(1, movieId);
+                        insertPs.setInt(2, genreId);
+                        insertPs.executeUpdate();
+                    }
+                }
+            }
+
+            conn.commit();
+        } catch (SQLException e) {
+            System.out.println("Ошибка при сохранении жанров фильма " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
-
-
