@@ -25,11 +25,6 @@ genre_id INTEGER REFERENCES genres(id) ON DELETE CASCADE,
 PRIMARY KEY (movie_id, genre_id)
 );
 
-TRUNCATE TABLE genre_movie CASCADE;
-TRUNCATE TABLE movies CASCADE;
-TRUNCATE TABLE genres CASCADE;
-TRUNCATE TABLE statuses CASCADE;
-
 INSERT INTO genres (name) VALUES
 ('Боевик'),
 ('Драма'),
@@ -40,10 +35,12 @@ INSERT INTO genres (name) VALUES
 ('Мелодрама'),
 ('Детектив'),
 ('Приключения'),
-('Фэнтези');
+('Фэнтези')
+ON CONFLICT (name) DO NOTHING;
 
 INSERT INTO statuses (name) VALUES
 ('Запланировано'),
 ('Просматривается'),
 ('Просмотрено'),
-('Брошено');
+('Брошено')
+ON CONFLICT (name) DO NOTHING;
