@@ -34,8 +34,8 @@
         <td th:text="${movie.releaseYear}">2000</td>
         <td th:text="${movie.status?.name}">Статус</td>
         <td>
-            <span th:each="genre, iter : ${movie.genres}" th:text="${genre.name} + (iter.last ? '' : ', ')"></span>
-            <span th:if="${movie.genres == null or movie.genres.isEmpty()}">нет жанров</span>
+            <span th:each="genre, iter : ${movie.genres}" th:text="${genre.name} + (iter.last ? ' ' : ' ')"></span>
+            <span th:if="${movie.genres == null or movie.genres.isEmpty()}">Нет жанров</span>
         </td>
         <td th:text="${movie.userRating != null ? movie.userRating + '/10' : 'нет оценки'}">0/10</td>
         <td>

@@ -56,10 +56,13 @@ public class SpringConfig implements WebMvcConfigurer {
             ResourceDatabasePopulator schemaPopulator = new ResourceDatabasePopulator();
             schemaPopulator.addScript(new ClassPathResource("schema.sql"));
             schemaPopulator.setContinueOnError(false);
+            schemaPopulator.setSqlScriptEncoding("UTF-8");
             DatabasePopulatorUtils.execute(schemaPopulator, dataSource);
+
             ResourceDatabasePopulator dataPopulator = new ResourceDatabasePopulator();
             dataPopulator.addScript(new ClassPathResource("data.sql"));
             dataPopulator.setContinueOnError(false);
+            dataPopulator.setSqlScriptEncoding("UTF-8");
             DatabasePopulatorUtils.execute(dataPopulator, dataSource);
 
         } catch (Exception e) {

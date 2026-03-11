@@ -1,5 +1,6 @@
 package ru.exmp.movielist.controller;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.exmp.movielist.model.Movie;
 import ru.exmp.movielist.model.Genre;
 import ru.exmp.movielist.model.Status;
@@ -42,16 +43,26 @@ public class MovieController {
     }
 
     @PostMapping("/save")
+    @Transactional
     public String saveMovie(@ModelAttribute Movie movie,
                             @RequestParam(value = "genreIds", required = false) List<Integer> genreIds) {
 
         if (movie.getStatus() != null && movie.getStatus().getId() != null) {
             Status status = statusRepository.findById(movie.getStatus().getId()).orElse(null);
             movie.setStatus(status);
+        } else {
+            movie.setStatus(null);
         }
 
         if (genreIds != null && !genreIds.isEmpty()) {
-            movie.setGenres(genreRepository.findAllById(genreIds));
+            List<Genre> genres = genreRepository.findAllById(genreIds);
+            movie.setGenres(genres);
+        } else {
+            movie.setGenres(null);
+        }
+
+        if (movie.getUserReview() != null && movie.getUserReview().trim().isEmpty()) {
+            movie.setUserReview(null);
         }
 
         movieRepository.save(movie);
