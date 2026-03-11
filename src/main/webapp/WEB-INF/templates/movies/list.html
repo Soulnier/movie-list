@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои фильмы</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        .btn { padding: 5px 10px; text-decoration: none; border-radius: 3px; }
+        .btn-edit { background: #ffc107; color: black; }
+        .btn-delete { background: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+<h1>Мои фильмы</h1>
+<a th:href="@{/movies/new}">Добавить фильм</a>
+
+<table>
+    <thead>
+    <tr>
+        <th>Название</th>
+        <th>Год</th>
+        <th>Статус</th>
+        <th>Жанры</th>
+        <th>Рейтинг</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="movie : ${movies}">
+        <td th:text="${movie.name}">Название</td>
+        <td th:text="${movie.releaseYear}">2000</td>
+        <td th:text="${movie.status?.name}">Статус</td>
+        <td>
+            <span th:each="genre, iter : ${movie.genres}" th:text="${genre.name} + (iter.last ? '' : ', ')"></span>
+            <span th:if="${movie.genres == null or movie.genres.isEmpty()}">нет жанров</span>
+        </td>
+        <td th:text="${movie.userRating != null ? movie.userRating + '/10' : 'нет оценки'}">0/10</td>
+        <td>
+            <a th:href="@{/movies/edit/{id}(id=${movie.id})}" class="btn btn-edit">Редактировать</a>
+            <a th:href="@{/movies/delete/{id}(id=${movie.id})}" class="btn btn-delete"
+               onclick="return confirm('Удалить?')">Удалить</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

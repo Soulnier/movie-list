@@ -1,20 +1,28 @@
 package ru.exmp.movielist.config;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.view.ThymeleafViewResolver;
+import org.thymeleaf.templatemode.TemplateMode;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -25,21 +33,40 @@ import java.util.Properties;
 @EnableJpaRepositories(basePackages = "ru.exmp.movielist.repository")
 @ComponentScan("ru.exmp.movielist")
 @PropertySource("classpath:database.properties")
-public class SpringConfig {
+public class SpringConfig implements WebMvcConfigurer {
 
     private final Environment env;
+    private final ApplicationContext applicationContext;
 
-    public SpringConfig(Environment env) {
+    public SpringConfig(Environment env, ApplicationContext applicationContext) {
         this.env = env;
+        this.applicationContext = applicationContext;
     }
 
     @Bean
     public DataSource dataSource() {
+
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(env.getProperty("db.driver"));
         dataSource.setUrl(env.getProperty("db.url"));
         dataSource.setUsername(env.getProperty("db.username"));
         dataSource.setPassword(env.getProperty("db.password"));
+
+        try {
+            ResourceDatabasePopulator schemaPopulator = new ResourceDatabasePopulator();
+            schemaPopulator.addScript(new ClassPathResource("schema.sql"));
+            schemaPopulator.setContinueOnError(false);
+            DatabasePopulatorUtils.execute(schemaPopulator, dataSource);
+            ResourceDatabasePopulator dataPopulator = new ResourceDatabasePopulator();
+            dataPopulator.addScript(new ClassPathResource("data.sql"));
+            dataPopulator.setContinueOnError(false);
+            DatabasePopulatorUtils.execute(dataPopulator, dataSource);
+
+        } catch (Exception e) {
+            System.out.println("Ошибка инициализации" + e.getMessage());
+            e.printStackTrace();
+        }
+
         return dataSource;
     }
 
@@ -57,8 +84,12 @@ public class SpringConfig {
         properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
         properties.setProperty("hibernate.format_sql", env.getProperty("hibernate.format_sql"));
         properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-        em.setJpaProperties(properties);
+        properties.setProperty("hibernate.connection.charSet", "UTF-8");
+        properties.setProperty("hibernate.connection.characterEncoding", "UTF-8");
+        properties.setProperty("hibernate.connection.useUnicode", "true");
 
+
+        em.setJpaProperties(properties);
         return em;
     }
 
@@ -70,10 +101,29 @@ public class SpringConfig {
     }
 
     @Bean
-    public ViewResolver viewResolver() {
-        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-        resolver.setPrefix("/WEB-INF/views/");
-        resolver.setSuffix(".jsp");
-        return resolver;
+    public SpringResourceTemplateResolver templateResolver() {
+        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+        templateResolver.setApplicationContext(applicationContext);
+        templateResolver.setPrefix("/WEB-INF/templates/");
+        templateResolver.setSuffix(".html");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        templateResolver.setCharacterEncoding("UTF-8");
+        return templateResolver;
+    }
+
+    @Bean
+    public SpringTemplateEngine templateEngine() {
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver());
+        templateEngine.setEnableSpringELCompiler(true);
+        return templateEngine;
+    }
+
+    @Override
+    public void configureViewResolvers(ViewResolverRegistry registry) {
+        ThymeleafViewResolver resolver = new ThymeleafViewResolver();
+        resolver.setTemplateEngine(templateEngine());
+        resolver.setCharacterEncoding("UTF-8");
+        registry.viewResolver(resolver);
     }
 }

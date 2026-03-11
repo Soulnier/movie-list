@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MovieList</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+        .welcome-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.3s;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .btn-primary {
+            background: #4CAF50;
+        }
+        .btn-secondary {
+            background: #2196F3;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+<div class="welcome-card">
+    <h1>🎬 Добро пожаловать</h1>
+    <p>Ваша персональная коллекция фильмов</p>
+    <div>
+        <a th:href="@{/movies}" class="btn btn-primary">Смотреть коллекцию</a>
+    </div>
+</div>
+</body>
+</html>

@@ -25,7 +25,7 @@ public class Movie {
     @Column(name = "release_year")
     private Integer releaseYear;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "watch_status_id")
     private Status status;
 
@@ -43,7 +43,7 @@ public class Movie {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "genre_movie",
             joinColumns = @JoinColumn(name = "movie_id"),

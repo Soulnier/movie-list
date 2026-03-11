@@ -1,9 +1,11 @@
 ru\exmp\movielist\model\Movie.class
-ru\exmp\movielist\repository\MovieRepository.class
 ru\exmp\movielist\model\Status.class
+ru\exmp\movielist\controller\MovieController.class
 ru\exmp\movielist\config\SpringConfig.class
 ru\exmp\movielist\model\Genre.class
 ru\exmp\movielist\repository\GenreRepository.class
 ru\exmp\movielist\repository\StatusRepository.class
-ru\exmp\movielist\config\WebInitializer.class
+ru\exmp\movielist\filter\CharsetFilter.class
 ru\exmp\movielist\controller\HomeController.class
+ru\exmp\movielist\repository\MovieRepository.class
+ru\exmp\movielist\config\WebInitializer.class

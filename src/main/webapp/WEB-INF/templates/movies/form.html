@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${movie.id == null} ? 'Добавить фильм' : 'Редактировать фильм'">Форма</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        form { max-width: 500px; }
+        label { display: block; margin: 10px 0 5px; }
+        input, select, textarea { width: 100%; padding: 8px; }
+        select[multiple] { height: 120px; }
+        button { margin-top: 20px; padding: 10px 20px; }
+    </style>
+</head>
+<body>
+<h1 th:text="${movie.id == null} ? 'Добавить фильм' : 'Редактировать фильм'">Форма</h1>
+
+<form th:action="@{/movies/save}" method="post">
+    <input type="hidden" name="id" th:value="${movie.id}">
+
+    <label>Название:</label>
+    <input type="text" name="name" th:value="${movie.name}" required>
+
+    <label>Год выпуска:</label>
+    <input type="number" name="releaseYear" th:value="${movie.releaseYear}" required>
+
+    <label>Статус:</label>
+    <select name="status.id">
+        <option value="">Без статуса</option>
+        <option th:each="status : ${allStatuses}"
+                th:value="${status.id}"
+                th:text="${status.name}"
+                th:selected="${movie.status != null and movie.status.id == status.id}">
+        </option>
+    </select>
+
+    <label>Жанры (можно выбрать несколько):</label>
+    <select name="genreIds" multiple>
+        <option th:each="genre : ${allGenres}"
+                th:value="${genre.id}"
+                th:text="${genre.name}"
+                th:selected="${movie.genres != null and movie.genres.contains(genre)}">
+        </option>
+    </select>
+
+    <label>Рейтинг (0-10):</label>
+    <input type="number" name="userRating" min="0" max="10" step="1" th:value="${movie.userRating}">
+
+    <label>Отзыв:</label>
+    <textarea name="userReview" rows="4" th:text="${movie.userReview}"></textarea>
+
+    <button type="submit">Сохранить</button>
+</form>
+
+<a th:href="@{/movies}">Назад</a>
+</body>
+</html>

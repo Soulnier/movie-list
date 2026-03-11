@@ -1,3 +1,8 @@
+DROP TABLE IF EXISTS movies CASCADE;
+DROP TABLE IF EXISTS genres CASCADE;
+DROP TABLE IF EXISTS statuses CASCADE;
+DROP TABLE IF EXISTS genre_movie CASCADE;
+
 CREATE TABLE IF NOT EXISTS genres (
 id SERIAL PRIMARY KEY,
 name TEXT UNIQUE NOT NULL
@@ -24,23 +29,3 @@ movie_id INTEGER REFERENCES movies(id) ON DELETE CASCADE,
 genre_id INTEGER REFERENCES genres(id) ON DELETE CASCADE,
 PRIMARY KEY (movie_id, genre_id)
 );
-
-INSERT INTO genres (name) VALUES
-('Боевик'),
-('Драма'),
-('Фантастика'),
-('Ужасы'),
-('Комедия'),
-('Триллер'),
-('Мелодрама'),
-('Детектив'),
-('Приключения'),
-('Фэнтези')
-ON CONFLICT (name) DO NOTHING;
-
-INSERT INTO statuses (name) VALUES
-('Запланировано'),
-('Просматривается'),
-('Просмотрено'),
-('Брошено')
-ON CONFLICT (name) DO NOTHING;

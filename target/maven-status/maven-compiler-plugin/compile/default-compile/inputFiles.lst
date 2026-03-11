@@ -1,9 +1,11 @@
-C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\config\SpringConfig.java
-C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\config\WebInitializer.java
 C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\controller\HomeController.java
-C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\model\Genre.java
+C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\repository\MovieRepository.java
+C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\controller\MovieController.java
+C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\filter\CharsetFilter.java
+C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\config\WebInitializer.java
+C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\repository\GenreRepository.java
+C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\repository\StatusRepository.java
+C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\config\SpringConfig.java
 C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\model\Movie.java
 C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\model\Status.java
-C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\repository\GenreRepository.java
-C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\repository\MovieRepository.java
-C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\repository\StatusRepository.java
+C:\Users\timka\IdeaProjects\movie_list\src\main\java\ru\exmp\movielist\model\Genre.java
